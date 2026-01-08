@@ -1,4 +1,2 @@
-ignore = []
-
-[per-file-ignores]
-"tests/**/*.py" = ["F401", "F841"]
+[lint]
+ignore = ["F401", "F841"]
