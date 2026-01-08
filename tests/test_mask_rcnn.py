@@ -1,8 +1,17 @@
-import pytest
-import numpy as np
-from unittest.mock import Mock, patch, MagicMock
 import sys
 import os
+import pytest
+import numpy as np
+from unittest.mock import Mock, patch, MagicMock, mock_open
+
+# ------------------------------------------------------------------
+# 🔴 CRITICAL FIX: Mock cv2 BEFORE importing mask_rcnn
+# ------------------------------------------------------------------
+mock_cv2 = MagicMock()
+mock_cv2.dnn = MagicMock()
+sys.modules["cv2"] = mock_cv2
+sys.modules["cv2.dnn"] = mock_cv2.dnn
+# ------------------------------------------------------------------
 
 
 class TestMaskRCNNStructure:
@@ -53,12 +62,10 @@ class TestMaskRCNNInit:
     """Test MaskRCNN initialization"""
 
     @patch("mask_rcnn.cv2.dnn.readNetFromTensorflow")
-    @patch("builtins.open", create=True)
-    def test_init_creates_instance(self, mock_open, mock_read_net):
+    @patch("builtins.open", new_callable=mock_open, read_data="")
+    def test_init_creates_instance(self, mock_file, mock_read_net):
         """Test that MaskRCNN can be instantiated"""
-        mock_net = MagicMock()
-        mock_read_net.return_value = mock_net
-        mock_open.return_value.__enter__.return_value = []
+        mock_read_net.return_value = MagicMock()
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
         from mask_rcnn import MaskRCNN
@@ -67,16 +74,15 @@ class TestMaskRCNNInit:
         assert mrcnn is not None
 
     @patch("mask_rcnn.cv2.dnn.readNetFromTensorflow")
-    @patch("builtins.open", create=True)
-    def test_init_has_required_attributes(self, mock_open, mock_read_net):
+    @patch("builtins.open", new_callable=mock_open, read_data="")
+    def test_init_has_required_attributes(self, mock_file, mock_read_net):
         """Test that __init__ creates required attributes"""
-        mock_net = MagicMock()
-        mock_read_net.return_value = mock_net
-        mock_open.return_value.__enter__.return_value = []
+        mock_read_net.return_value = MagicMock()
 
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
         if "mask_rcnn" in sys.modules:
             del sys.modules["mask_rcnn"]
+
         from mask_rcnn import MaskRCNN
 
         mrcnn = MaskRCNN()
@@ -95,12 +101,10 @@ class TestMaskRCNNMethods:
     """Test MaskRCNN methods exist and can be called"""
 
     @patch("mask_rcnn.cv2.dnn.readNetFromTensorflow")
-    @patch("builtins.open", create=True)
-    def test_detect_objects_mask_exists_and_callable(self, mock_open, mock_read_net):
+    @patch("builtins.open", new_callable=mock_open, read_data="")
+    def test_detect_objects_mask_exists_and_callable(self, mock_file, mock_read_net):
         """Test that detect_objects_mask method exists"""
-        mock_net = MagicMock()
-        mock_read_net.return_value = mock_net
-        mock_open.return_value.__enter__.return_value = []
+        mock_read_net.return_value = MagicMock()
 
         from mask_rcnn import MaskRCNN
 
@@ -109,12 +113,10 @@ class TestMaskRCNNMethods:
         assert callable(mrcnn.detect_objects_mask)
 
     @patch("mask_rcnn.cv2.dnn.readNetFromTensorflow")
-    @patch("builtins.open", create=True)
-    def test_draw_object_mask_exists_and_callable(self, mock_open, mock_read_net):
+    @patch("builtins.open", new_callable=mock_open, read_data="")
+    def test_draw_object_mask_exists_and_callable(self, mock_file, mock_read_net):
         """Test that draw_object_mask method exists"""
-        mock_net = MagicMock()
-        mock_read_net.return_value = mock_net
-        mock_open.return_value.__enter__.return_value = []
+        mock_read_net.return_value = MagicMock()
 
         from mask_rcnn import MaskRCNN
 
@@ -123,12 +125,10 @@ class TestMaskRCNNMethods:
         assert callable(mrcnn.draw_object_mask)
 
     @patch("mask_rcnn.cv2.dnn.readNetFromTensorflow")
-    @patch("builtins.open", create=True)
-    def test_draw_object_info_exists_and_callable(self, mock_open, mock_read_net):
+    @patch("builtins.open", new_callable=mock_open, read_data="")
+    def test_draw_object_info_exists_and_callable(self, mock_file, mock_read_net):
         """Test that draw_object_info method exists"""
-        mock_net = MagicMock()
-        mock_read_net.return_value = mock_net
-        mock_open.return_value.__enter__.return_value = []
+        mock_read_net.return_value = MagicMock()
 
         from mask_rcnn import MaskRCNN
 
