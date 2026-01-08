@@ -1,5 +1,4 @@
-[tool.ruff]
-# Keep rules enabled by default
+ignore = []
 
-[tool.ruff.per-file-ignores]
+[per-file-ignores]
 "tests/**/*.py" = ["F401", "F841"]
