@@ -3,5 +3,3 @@ pytest
 pytest-cov
 ruff
 opencv-python
-tox
-ruff
