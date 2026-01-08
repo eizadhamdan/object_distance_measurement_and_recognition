@@ -1,0 +1,4 @@
+pyrealsense2
+numpy
+pytest
+opencv-python
