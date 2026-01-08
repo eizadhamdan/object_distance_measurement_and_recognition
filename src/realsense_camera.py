@@ -1,10 +1,8 @@
-
 import pyrealsense2 as rs
 import numpy as np
 
 
 class RealsenseCamera:
-
     def __init__(self):
         # Configure depth and color streams
         print("Loading Intel Realsense Camera")
@@ -25,12 +23,14 @@ class RealsenseCamera:
         aligned_frames = self.align.process(frames)
         depth_frame = aligned_frames.get_depth_frame()
         color_frame = aligned_frames.get_color_frame()
-        
+
         if not depth_frame or not color_frame:
             # If there is no frame, probably camera not connected, return False
-            print("Error, impossible to get the frame, make sure that the Intel Realsense camera is correctly connected")
+            print(
+                "Error, impossible to get the frame, make sure that the Intel Realsense camera is correctly connected"
+            )
             return False, None, None
-        
+
         # Apply filter to fill the Holes in the depth image
         spatial = rs.spatial_filter()
         spatial.set_option(rs.option.holes_fill, 3)
@@ -42,7 +42,7 @@ class RealsenseCamera:
         # Create colormap to show the depth of the Objects
         colorizer = rs.colorizer()
         depth_colormap = np.asanyarray(colorizer.colorize(filled_depth).get_data())
-        
+
         # Convert images to numpy arrays
         # distance = depth_frame.get_distance(int(50),int(50))
         # print("distance", distance)
@@ -53,17 +53,14 @@ class RealsenseCamera:
         # cv2.imshow("depth img", depth_image)
 
         return True, color_image, depth_image
-    
+
     def release(self):
         self.pipeline.stop()
-        #print(depth_image)
-        
+        # print(depth_image)
+
         # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-        #depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.10), 2)
+        # depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.10), 2)
 
         # Stack both images horizontally
-        
-        #images = np.hstack((color_image, depth_colormap))
 
-
-
+        # images = np.hstack((color_image, depth_colormap))
