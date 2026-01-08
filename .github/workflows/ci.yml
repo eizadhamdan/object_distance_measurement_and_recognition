@@ -8,9 +8,11 @@ on:
 
 jobs:
     test-and-lint:
-        runs-on: ubuntu-latest
+        runs-on: ${{ matrix.os }}
+
         strategy:
             matrix:
+                os: [ubuntu-latest, windows-latest]
                 python-version: [3.11, 3.12]
 
         steps:
@@ -21,23 +23,58 @@ jobs:
               with:
                   python-version: ${{ matrix.python-version }}
 
-            - name: Create virtual environment
+            # ---------- Linux ----------
+            - name: Create virtual environment (Linux)
+              if: runner.os == 'Linux'
               run: |
                   python -m venv .venv
                   source .venv/bin/activate
                   python -m pip install --upgrade pip
 
-            - name: Install dev dependencies
+            - name: Install dev dependencies (Linux)
+              if: runner.os == 'Linux'
               run: |
                   source .venv/bin/activate
                   pip install -r requirements-dev.txt
 
-            - name: Run tests
+            - name: Run tests (Linux)
+              if: runner.os == 'Linux'
+              env:
+                  PYTHONPATH: ${{ github.workspace }}/src
               run: |
                   source .venv/bin/activate
-                  pytest
+                  python -m pytest
 
-            - name: Run linter
+            - name: Run linter (Linux)
+              if: runner.os == 'Linux'
               run: |
                   source .venv/bin/activate
+                  ruff check src tests
+
+            # ---------- Windows ----------
+            - name: Create virtual environment (Windows)
+              if: runner.os == 'Windows'
+              run: |
+                  python -m venv .venv
+                  .venv\Scripts\activate
+                  python -m pip install --upgrade pip
+
+            - name: Install dev dependencies (Windows)
+              if: runner.os == 'Windows'
+              run: |
+                  .venv\Scripts\activate
+                  pip install -r requirements-dev.txt
+
+            - name: Run tests (Windows)
+              if: runner.os == 'Windows'
+              env:
+                  PYTHONPATH: ${{ github.workspace }}\src
+              run: |
+                  .venv\Scripts\activate
+                  python -m pytest
+
+            - name: Run linter (Windows)
+              if: runner.os == 'Windows'
+              run: |
+                  .venv\Scripts\activate
                   ruff check src tests
